@@ -364,3 +364,59 @@ IOMMU group 7 80:01.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36
 IOMMU group 8 80:02.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c]
 IOMMU group 9 81:00.0 Display controller [0380]: Red Hat, Inc. Virtio 1.0 GPU [1af4:1050] (rev 01)
 ```
+
+```
+[root@localhost ~]# lscpu
+Architecture:                x86_64
+  CPU op-mode(s):            32-bit, 64-bit
+  Address sizes:             40 bits physical, 48 bits virtual
+  Byte Order:                Little Endian
+CPU(s):                      8
+  On-line CPU(s) list:       0-7
+Vendor ID:                   GenuineIntel
+  BIOS Vendor ID:            QEMU
+  Model name:                Intel Core Processor (Skylake)
+    BIOS Model name:         pc-q35-10.0  CPU @ 2.0GHz
+    BIOS CPU family:         1
+    CPU family:              6
+    Model:                   94
+    Thread(s) per core:      1
+    Core(s) per socket:      4
+    Socket(s):               2
+    Stepping:                3
+    BogoMIPS:                6815.96
+    Flags:                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdts
+                             cp lm constant_tsc rep_good nopl xtopology cpuid tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2ap
+                             ic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch cpuid_fault pti fs
+                             gsbase bmi1 hle avx2 smep bmi2 erms invpcid rtm rdseed adx smap xsaveopt xsavec xgetbv1 arat
+Virtualization features:     
+  Hypervisor vendor:         KVM
+  Virtualization type:       full
+Caches (sum of all):         
+  L1d:                       256 KiB (8 instances)
+  L1i:                       256 KiB (8 instances)
+  L2:                        32 MiB (8 instances)
+  L3:                        32 MiB (2 instances)
+NUMA:                        
+  NUMA node(s):              2
+  NUMA node0 CPU(s):         0-3
+  NUMA node1 CPU(s):         4-7
+Vulnerabilities:             
+  Gather data sampling:      Unknown: Dependent on hypervisor status
+  Indirect target selection: Mitigation; Aligned branch/return thunks
+  Itlb multihit:             KVM: Mitigation: VMX unsupported
+  L1tf:                      Mitigation; PTE Inversion
+  Mds:                       Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown
+  Meltdown:                  Mitigation; PTI
+  Mmio stale data:           Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown
+  Reg file data sampling:    Not affected
+  Retbleed:                  Vulnerable
+  Spec rstack overflow:      Not affected
+  Spec store bypass:         Vulnerable
+  Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+  Spectre v2:                Mitigation; Retpolines; STIBP disabled; RSB filling; PBRSB-eIBRS Not affected; BHI Retpoline
+  Srbds:                     Unknown: Dependent on hypervisor status
+  Tsa:                       Not affected
+  Tsx async abort:           Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown
+  Vmscape:                   Not affected
+  ```
