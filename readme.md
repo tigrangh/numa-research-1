@@ -336,34 +336,6 @@ node     0    1
 	Kernel modules: nvme
 ```
 
-### Verify the IOMMU groups
-
-```
-[root@localhost ~]# for d in /sys/kernel/iommu_groups/*/devices/*; do n=${d#*/iommu_groups/*}; n=${n%%/*}; printf 'IOMMU group %s ' "$n"; lspci -nns "${d##*/}"; done
-IOMMU group 0 00:00.0 Host bridge [0600]: Intel Corporation 82G33/G31/P35/P31 Express DRAM Controller [8086:29c0]
-IOMMU group 10 82:00.0 Ethernet controller [0200]: Red Hat, Inc. Virtio 1.0 network device [1af4:1041] (rev 01)
-IOMMU group 11 83:00.0 Non-Volatile memory controller [0108]: Red Hat, Inc. QEMU NVM Express Controller [1b36:0010] (rev 02)
-IOMMU group 12 02:00.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c]
-IOMMU group 13 02:01.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c]
-IOMMU group 14 02:02.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c]
-IOMMU group 15 03:00.0 Display controller [0380]: Red Hat, Inc. Virtio 1.0 GPU [1af4:1050] (rev 01)
-IOMMU group 16 04:00.0 Ethernet controller [0200]: Red Hat, Inc. Virtio 1.0 network device [1af4:1041] (rev 01)
-IOMMU group 17 05:00.0 Non-Volatile memory controller [0108]: Red Hat, Inc. QEMU NVM Express Controller [1b36:0010] (rev 02)
-IOMMU group 1 00:01.0 VGA compatible controller [0300]: Device [1234:1111] (rev 02)
-IOMMU group 2 00:02.0 Host bridge [0600]: Red Hat, Inc. QEMU PCIe Expander bridge [1b36:000b]
-IOMMU group 3 00:03.0 Host bridge [0600]: Red Hat, Inc. QEMU PCIe Expander bridge [1b36:000b]
-IOMMU group 4 00:1d.0 USB controller [0c03]: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #1 [8086:2934] (rev 03)
-IOMMU group 4 00:1d.1 USB controller [0c03]: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #2 [8086:2935] (rev 03)
-IOMMU group 4 00:1d.2 USB controller [0c03]: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #3 [8086:2936] (rev 03)
-IOMMU group 4 00:1d.7 USB controller [0c03]: Intel Corporation 82801I (ICH9 Family) USB2 EHCI Controller #1 [8086:293a] (rev 03)
-IOMMU group 5 00:1f.0 ISA bridge [0601]: Intel Corporation 82801IB (ICH9) LPC Interface Controller [8086:2918] (rev 02)
-IOMMU group 5 00:1f.2 SATA controller [0106]: Intel Corporation 82801IR/IO/IH (ICH9R/DO/DH) 6 port SATA Controller [AHCI mode] [8086:2922] (rev 02)
-IOMMU group 5 00:1f.3 SMBus [0c05]: Intel Corporation 82801I (ICH9 Family) SMBus Controller [8086:2930] (rev 02)
-IOMMU group 6 80:00.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c]
-IOMMU group 7 80:01.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c]
-IOMMU group 8 80:02.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c]
-IOMMU group 9 81:00.0 Display controller [0380]: Red Hat, Inc. Virtio 1.0 GPU [1af4:1050] (rev 01)
-```
 
 ```
 [root@localhost ~]# lscpu
@@ -420,3 +392,32 @@ Vulnerabilities:
   Tsx async abort:           Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown
   Vmscape:                   Not affected
   ```
+
+### Verify the IOMMU groups
+
+```
+[root@localhost ~]# for d in /sys/kernel/iommu_groups/*/devices/*; do n=${d#*/iommu_groups/*}; n=${n%%/*}; printf 'IOMMU group %s ' "$n"; lspci -nns "${d##*/}"; done
+IOMMU group 0 00:00.0 Host bridge [0600]: Intel Corporation 82G33/G31/P35/P31 Express DRAM Controller [8086:29c0]
+IOMMU group 10 82:00.0 Ethernet controller [0200]: Red Hat, Inc. Virtio 1.0 network device [1af4:1041] (rev 01)
+IOMMU group 11 83:00.0 Non-Volatile memory controller [0108]: Red Hat, Inc. QEMU NVM Express Controller [1b36:0010] (rev 02)
+IOMMU group 12 02:00.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c]
+IOMMU group 13 02:01.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c]
+IOMMU group 14 02:02.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c]
+IOMMU group 15 03:00.0 Display controller [0380]: Red Hat, Inc. Virtio 1.0 GPU [1af4:1050] (rev 01)
+IOMMU group 16 04:00.0 Ethernet controller [0200]: Red Hat, Inc. Virtio 1.0 network device [1af4:1041] (rev 01)
+IOMMU group 17 05:00.0 Non-Volatile memory controller [0108]: Red Hat, Inc. QEMU NVM Express Controller [1b36:0010] (rev 02)
+IOMMU group 1 00:01.0 VGA compatible controller [0300]: Device [1234:1111] (rev 02)
+IOMMU group 2 00:02.0 Host bridge [0600]: Red Hat, Inc. QEMU PCIe Expander bridge [1b36:000b]
+IOMMU group 3 00:03.0 Host bridge [0600]: Red Hat, Inc. QEMU PCIe Expander bridge [1b36:000b]
+IOMMU group 4 00:1d.0 USB controller [0c03]: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #1 [8086:2934] (rev 03)
+IOMMU group 4 00:1d.1 USB controller [0c03]: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #2 [8086:2935] (rev 03)
+IOMMU group 4 00:1d.2 USB controller [0c03]: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #3 [8086:2936] (rev 03)
+IOMMU group 4 00:1d.7 USB controller [0c03]: Intel Corporation 82801I (ICH9 Family) USB2 EHCI Controller #1 [8086:293a] (rev 03)
+IOMMU group 5 00:1f.0 ISA bridge [0601]: Intel Corporation 82801IB (ICH9) LPC Interface Controller [8086:2918] (rev 02)
+IOMMU group 5 00:1f.2 SATA controller [0106]: Intel Corporation 82801IR/IO/IH (ICH9R/DO/DH) 6 port SATA Controller [AHCI mode] [8086:2922] (rev 02)
+IOMMU group 5 00:1f.3 SMBus [0c05]: Intel Corporation 82801I (ICH9 Family) SMBus Controller [8086:2930] (rev 02)
+IOMMU group 6 80:00.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c]
+IOMMU group 7 80:01.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c]
+IOMMU group 8 80:02.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c]
+IOMMU group 9 81:00.0 Display controller [0380]: Red Hat, Inc. Virtio 1.0 GPU [1af4:1050] (rev 01)
+```
