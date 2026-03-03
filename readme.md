@@ -43,7 +43,7 @@ qemu-system-x86_64 \
   -device intel-iommu,caching-mode=on
 ```
 
-### Verifying the architecture
+### Verify the architecture
 
 ```
 [root@localhost ~]# numactl --hardware
