@@ -49,6 +49,20 @@ qemu-system-x86_64 \
   -device intel-iommu,caching-mode=on
 ```
 
+### Add iommu related kernel cmdline
+
+```
+grubby --update-kernel=ALL --args="intel_iommu=on iommu=pt pcie_acs_override=downstream,multifunction"
+```
+### Prepare VFIO related modules
+
+```
+printf "options vfio-pci ids=1af4:1050,1af4:1041,1b36:0010\n" > /etc/modprobe.d/vfio.conf
+printf "vfio\nvfio_iommu_type1\nvfio_pci\n#vfio_virqfd\n" > /etc/modules-load.d/vfio.conf
+```
+
+comment: no idea whether virtio-gpu-pci can be used for vfio passthrough
+
 ### Verify the architecture
 
 ```
@@ -88,13 +102,13 @@ node     0    1
 ```
 
 ```
-[root@localhost ~]# lspci -v
-00:00.0 Host bridge: Intel Corporation 82G33/G31/P35/P31 Express DRAM Controller
-	Subsystem: Red Hat, Inc. QEMU Virtual Machine
+[root@localhost ~]# lspci -v -nn -k
+00:00.0 Host bridge [0600]: Intel Corporation 82G33/G31/P35/P31 Express DRAM Controller [8086:29c0]
+	Subsystem: Red Hat, Inc. QEMU Virtual Machine [1af4:1100]
 	Flags: bus master, fast devsel, latency 0, IOMMU group 0
 
-00:01.0 VGA compatible controller: Device 1234:1111 (rev 02) (prog-if 00 [VGA controller])
-	Subsystem: Red Hat, Inc. Device 1100
+00:01.0 VGA compatible controller [0300]: Device [1234:1111] (rev 02) (prog-if 00 [VGA controller])
+	Subsystem: Red Hat, Inc. Device [1af4:1100]
 	Flags: bus master, fast devsel, latency 0, IOMMU group 1
 	Memory at 80000000 (32-bit, prefetchable) [size=16M]
 	Memory at 81012000 (32-bit, non-prefetchable) [size=4K]
@@ -102,46 +116,46 @@ node     0    1
 	Kernel driver in use: bochs-drm
 	Kernel modules: bochs
 
-00:02.0 Host bridge: Red Hat, Inc. QEMU PCIe Expander bridge
-	Subsystem: Red Hat, Inc. Device 1100
+00:02.0 Host bridge [0600]: Red Hat, Inc. QEMU PCIe Expander bridge [1b36:000b]
+	Subsystem: Red Hat, Inc. Device [1af4:1100]
 	Flags: bus master, 66MHz, fast devsel, latency 0, IOMMU group 2
 
-00:03.0 Host bridge: Red Hat, Inc. QEMU PCIe Expander bridge
-	Subsystem: Red Hat, Inc. Device 1100
+00:03.0 Host bridge [0600]: Red Hat, Inc. QEMU PCIe Expander bridge [1b36:000b]
+	Subsystem: Red Hat, Inc. Device [1af4:1100]
 	Flags: bus master, 66MHz, fast devsel, latency 0, IOMMU group 3
 
-00:1d.0 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #1 (rev 03) (prog-if 00 [UHCI])
-	Subsystem: Red Hat, Inc. QEMU Virtual Machine
+00:1d.0 USB controller [0c03]: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #1 [8086:2934] (rev 03) (prog-if 00 [UHCI])
+	Subsystem: Red Hat, Inc. QEMU Virtual Machine [1af4:1100]
 	Flags: bus master, fast devsel, latency 0, IRQ 16, IOMMU group 4
 	I/O ports at 60a0 [size=32]
 	Kernel driver in use: uhci_hcd
 
-00:1d.1 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #2 (rev 03) (prog-if 00 [UHCI])
-	Subsystem: Red Hat, Inc. QEMU Virtual Machine
+00:1d.1 USB controller [0c03]: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #2 [8086:2935] (rev 03) (prog-if 00 [UHCI])
+	Subsystem: Red Hat, Inc. QEMU Virtual Machine [1af4:1100]
 	Flags: bus master, fast devsel, latency 0, IRQ 17, IOMMU group 4
 	I/O ports at 6080 [size=32]
 	Kernel driver in use: uhci_hcd
 
-00:1d.2 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #3 (rev 03) (prog-if 00 [UHCI])
-	Subsystem: Red Hat, Inc. QEMU Virtual Machine
+00:1d.2 USB controller [0c03]: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #3 [8086:2936] (rev 03) (prog-if 00 [UHCI])
+	Subsystem: Red Hat, Inc. QEMU Virtual Machine [1af4:1100]
 	Flags: bus master, fast devsel, latency 0, IRQ 18, IOMMU group 4
 	I/O ports at 6060 [size=32]
 	Kernel driver in use: uhci_hcd
 
-00:1d.7 USB controller: Intel Corporation 82801I (ICH9 Family) USB2 EHCI Controller #1 (rev 03) (prog-if 20 [EHCI])
-	Subsystem: Red Hat, Inc. QEMU Virtual Machine
+00:1d.7 USB controller [0c03]: Intel Corporation 82801I (ICH9 Family) USB2 EHCI Controller #1 [8086:293a] (rev 03) (prog-if 20 [EHCI])
+	Subsystem: Red Hat, Inc. QEMU Virtual Machine [1af4:1100]
 	Flags: bus master, fast devsel, latency 0, IRQ 19, IOMMU group 4
 	Memory at 81011000 (32-bit, non-prefetchable) [size=4K]
 	Kernel driver in use: ehci-pci
 
-00:1f.0 ISA bridge: Intel Corporation 82801IB (ICH9) LPC Interface Controller (rev 02)
-	Subsystem: Red Hat, Inc. QEMU Virtual Machine
+00:1f.0 ISA bridge [0601]: Intel Corporation 82801IB (ICH9) LPC Interface Controller [8086:2918] (rev 02)
+	Subsystem: Red Hat, Inc. QEMU Virtual Machine [1af4:1100]
 	Flags: bus master, fast devsel, latency 0, IOMMU group 5
 	Kernel driver in use: lpc_ich
 	Kernel modules: lpc_ich
 
-00:1f.2 SATA controller: Intel Corporation 82801IR/IO/IH (ICH9R/DO/DH) 6 port SATA Controller [AHCI mode] (rev 02) (prog-if 01 [AHCI 1.0])
-	Subsystem: Red Hat, Inc. QEMU Virtual Machine
+00:1f.2 SATA controller [0106]: Intel Corporation 82801IR/IO/IH (ICH9R/DO/DH) 6 port SATA Controller [AHCI mode] [8086:2922] (rev 02) (prog-if 01 [AHCI 1.0])
+	Subsystem: Red Hat, Inc. QEMU Virtual Machine [1af4:1100]
 	Flags: bus master, fast devsel, latency 0, IRQ 37, IOMMU group 5
 	I/O ports at 6040 [size=32]
 	Memory at 81010000 (32-bit, non-prefetchable) [size=4K]
@@ -150,15 +164,15 @@ node     0    1
 	Kernel driver in use: ahci
 	Kernel modules: ahci
 
-00:1f.3 SMBus: Intel Corporation 82801I (ICH9 Family) SMBus Controller (rev 02)
-	Subsystem: Red Hat, Inc. QEMU Virtual Machine
+00:1f.3 SMBus [0c05]: Intel Corporation 82801I (ICH9 Family) SMBus Controller [8086:2930] (rev 02)
+	Subsystem: Red Hat, Inc. QEMU Virtual Machine [1af4:1100]
 	Flags: bus master, fast devsel, latency 0, IRQ 16, IOMMU group 5
 	I/O ports at 6000 [size=64]
 	Kernel driver in use: i801_smbus
 	Kernel modules: i2c_i801
 
-02:00.0 PCI bridge: Red Hat, Inc. QEMU PCIe Root port (prog-if 00 [Normal decode])
-	Subsystem: Red Hat, Inc. Device 0000
+02:00.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c] (prog-if 00 [Normal decode])
+	Subsystem: Red Hat, Inc. Device [1b36:0000]
 	Flags: bus master, fast devsel, latency 0, IRQ 11, NUMA node 0, IOMMU group 12
 	Memory at 81842000 (32-bit, non-prefetchable) [size=4K]
 	Bus: primary=02, secondary=03, subordinate=03, sec-latency=0
@@ -167,13 +181,13 @@ node     0    1
 	Prefetchable memory behind bridge: 800000000-8000fffff [size=1M] [32-bit]
 	Capabilities: [54] Express Root Port (Slot+), IntMsgNum 0
 	Capabilities: [48] MSI-X: Enable+ Count=1 Masked-
-	Capabilities: [40] Subsystem: Red Hat, Inc. Device 0000
+	Capabilities: [40] Subsystem: Red Hat, Inc. Device [1b36:0000]
 	Capabilities: [100] Advanced Error Reporting
 	Capabilities: [148] Access Control Services
 	Kernel driver in use: pcieport
 
-02:01.0 PCI bridge: Red Hat, Inc. QEMU PCIe Root port (prog-if 00 [Normal decode])
-	Subsystem: Red Hat, Inc. Device 0000
+02:01.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c] (prog-if 00 [Normal decode])
+	Subsystem: Red Hat, Inc. Device [1b36:0000]
 	Flags: bus master, fast devsel, latency 0, IRQ 10, NUMA node 0, IOMMU group 13
 	Memory at 81841000 (32-bit, non-prefetchable) [size=4K]
 	Bus: primary=02, secondary=04, subordinate=04, sec-latency=0
@@ -182,13 +196,13 @@ node     0    1
 	Prefetchable memory behind bridge: 800100000-8001fffff [size=1M] [32-bit]
 	Capabilities: [54] Express Root Port (Slot+), IntMsgNum 0
 	Capabilities: [48] MSI-X: Enable+ Count=1 Masked-
-	Capabilities: [40] Subsystem: Red Hat, Inc. Device 0000
+	Capabilities: [40] Subsystem: Red Hat, Inc. Device [1b36:0000]
 	Capabilities: [100] Advanced Error Reporting
 	Capabilities: [148] Access Control Services
 	Kernel driver in use: pcieport
 
-02:02.0 PCI bridge: Red Hat, Inc. QEMU PCIe Root port (prog-if 00 [Normal decode])
-	Subsystem: Red Hat, Inc. Device 0000
+02:02.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c] (prog-if 00 [Normal decode])
+	Subsystem: Red Hat, Inc. Device [1b36:0000]
 	Flags: bus master, fast devsel, latency 0, IRQ 10, NUMA node 0, IOMMU group 14
 	Memory at 81840000 (32-bit, non-prefetchable) [size=4K]
 	Bus: primary=02, secondary=05, subordinate=05, sec-latency=0
@@ -197,13 +211,13 @@ node     0    1
 	Prefetchable memory behind bridge: [disabled] [64-bit]
 	Capabilities: [54] Express Root Port (Slot+), IntMsgNum 0
 	Capabilities: [48] MSI-X: Enable+ Count=1 Masked-
-	Capabilities: [40] Subsystem: Red Hat, Inc. Device 0000
+	Capabilities: [40] Subsystem: Red Hat, Inc. Device [1b36:0000]
 	Capabilities: [100] Advanced Error Reporting
 	Capabilities: [148] Access Control Services
 	Kernel driver in use: pcieport
 
-03:00.0 Display controller: Red Hat, Inc. Virtio 1.0 GPU (rev 01)
-	Subsystem: Red Hat, Inc. QEMU
+03:00.0 Display controller [0380]: Red Hat, Inc. Virtio 1.0 GPU [1af4:1050] (rev 01)
+	Subsystem: Red Hat, Inc. QEMU [1af4:1100]
 	Physical Slot: 0
 	Flags: bus master, fast devsel, latency 0, IRQ 11, NUMA node 0, IOMMU group 15
 	Memory at 81600000 (32-bit, non-prefetchable) [size=4K]
@@ -218,8 +232,8 @@ node     0    1
 	Capabilities: [40] Express Endpoint, IntMsgNum 0
 	Kernel driver in use: virtio-pci
 
-04:00.0 Ethernet controller: Red Hat, Inc. Virtio 1.0 network device (rev 01)
-	Subsystem: Red Hat, Inc. QEMU
+04:00.0 Ethernet controller [0200]: Red Hat, Inc. Virtio 1.0 network device [1af4:1041] (rev 01)
+	Subsystem: Red Hat, Inc. QEMU [1af4:1100]
 	Physical Slot: 2
 	Flags: bus master, fast devsel, latency 0, IRQ 10, NUMA node 0, IOMMU group 16
 	Memory at 81400000 (32-bit, non-prefetchable) [size=4K]
@@ -235,19 +249,19 @@ node     0    1
 	Capabilities: [40] Express Endpoint, IntMsgNum 0
 	Kernel driver in use: virtio-pci
 
-05:00.0 Non-Volatile memory controller: Red Hat, Inc. QEMU NVM Express Controller (rev 02) (prog-if 02 [NVM Express])
-	Subsystem: Red Hat, Inc. Device 1100
+05:00.0 Non-Volatile memory controller [0108]: Red Hat, Inc. QEMU NVM Express Controller [1b36:0010] (rev 02) (prog-if 02 [NVM Express])
+	Subsystem: Red Hat, Inc. Device [1af4:1100]
 	Physical Slot: 4
-	Flags: bus master, fast devsel, latency 0, IRQ 10, NUMA node 0, IOMMU group 17
+	Flags: bus master, fast devsel, latency 0, IRQ 11, NUMA node 0, IOMMU group 17
 	Memory at 81200000 (64-bit, non-prefetchable) [size=16K]
-	Capabilities: [40] MSI-X: Enable+ Count=65 Masked-
+	Capabilities: [40] MSI-X: Enable- Count=65 Masked-
 	Capabilities: [80] Express Endpoint, IntMsgNum 0
 	Capabilities: [60] Power Management version 3
-	Kernel driver in use: nvme
+	Kernel driver in use: vfio-pci
 	Kernel modules: nvme
 
-80:00.0 PCI bridge: Red Hat, Inc. QEMU PCIe Root port (prog-if 00 [Normal decode])
-	Subsystem: Red Hat, Inc. Device 0000
+80:00.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c] (prog-if 00 [Normal decode])
+	Subsystem: Red Hat, Inc. Device [1b36:0000]
 	Flags: bus master, fast devsel, latency 0, IRQ 11, NUMA node 1, IOMMU group 6
 	Memory at 82042000 (32-bit, non-prefetchable) [size=4K]
 	Bus: primary=80, secondary=81, subordinate=81, sec-latency=0
@@ -256,13 +270,13 @@ node     0    1
 	Prefetchable memory behind bridge: 800200000-8002fffff [size=1M] [32-bit]
 	Capabilities: [54] Express Root Port (Slot+), IntMsgNum 0
 	Capabilities: [48] MSI-X: Enable+ Count=1 Masked-
-	Capabilities: [40] Subsystem: Red Hat, Inc. Device 0000
+	Capabilities: [40] Subsystem: Red Hat, Inc. Device [1b36:0000]
 	Capabilities: [100] Advanced Error Reporting
 	Capabilities: [148] Access Control Services
 	Kernel driver in use: pcieport
 
-80:01.0 PCI bridge: Red Hat, Inc. QEMU PCIe Root port (prog-if 00 [Normal decode])
-	Subsystem: Red Hat, Inc. Device 0000
+80:01.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c] (prog-if 00 [Normal decode])
+	Subsystem: Red Hat, Inc. Device [1b36:0000]
 	Flags: bus master, fast devsel, latency 0, IRQ 10, NUMA node 1, IOMMU group 7
 	Memory at 82041000 (32-bit, non-prefetchable) [size=4K]
 	Bus: primary=80, secondary=82, subordinate=82, sec-latency=0
@@ -271,13 +285,13 @@ node     0    1
 	Prefetchable memory behind bridge: 800300000-8003fffff [size=1M] [32-bit]
 	Capabilities: [54] Express Root Port (Slot+), IntMsgNum 0
 	Capabilities: [48] MSI-X: Enable+ Count=1 Masked-
-	Capabilities: [40] Subsystem: Red Hat, Inc. Device 0000
+	Capabilities: [40] Subsystem: Red Hat, Inc. Device [1b36:0000]
 	Capabilities: [100] Advanced Error Reporting
 	Capabilities: [148] Access Control Services
 	Kernel driver in use: pcieport
 
-80:02.0 PCI bridge: Red Hat, Inc. QEMU PCIe Root port (prog-if 00 [Normal decode])
-	Subsystem: Red Hat, Inc. Device 0000
+80:02.0 PCI bridge [0604]: Red Hat, Inc. QEMU PCIe Root port [1b36:000c] (prog-if 00 [Normal decode])
+	Subsystem: Red Hat, Inc. Device [1b36:0000]
 	Flags: bus master, fast devsel, latency 0, IRQ 10, NUMA node 1, IOMMU group 8
 	Memory at 82040000 (32-bit, non-prefetchable) [size=4K]
 	Bus: primary=80, secondary=83, subordinate=83, sec-latency=0
@@ -286,13 +300,13 @@ node     0    1
 	Prefetchable memory behind bridge: [disabled] [64-bit]
 	Capabilities: [54] Express Root Port (Slot+), IntMsgNum 0
 	Capabilities: [48] MSI-X: Enable+ Count=1 Masked-
-	Capabilities: [40] Subsystem: Red Hat, Inc. Device 0000
+	Capabilities: [40] Subsystem: Red Hat, Inc. Device [1b36:0000]
 	Capabilities: [100] Advanced Error Reporting
 	Capabilities: [148] Access Control Services
 	Kernel driver in use: pcieport
 
-81:00.0 Display controller: Red Hat, Inc. Virtio 1.0 GPU (rev 01)
-	Subsystem: Red Hat, Inc. QEMU
+81:00.0 Display controller [0380]: Red Hat, Inc. Virtio 1.0 GPU [1af4:1050] (rev 01)
+	Subsystem: Red Hat, Inc. QEMU [1af4:1100]
 	Physical Slot: 1
 	Flags: bus master, fast devsel, latency 0, IRQ 11, NUMA node 1, IOMMU group 9
 	Memory at 81e00000 (32-bit, non-prefetchable) [size=4K]
@@ -307,8 +321,8 @@ node     0    1
 	Capabilities: [40] Express Endpoint, IntMsgNum 0
 	Kernel driver in use: virtio-pci
 
-82:00.0 Ethernet controller: Red Hat, Inc. Virtio 1.0 network device (rev 01)
-	Subsystem: Red Hat, Inc. QEMU
+82:00.0 Ethernet controller [0200]: Red Hat, Inc. Virtio 1.0 network device [1af4:1041] (rev 01)
+	Subsystem: Red Hat, Inc. QEMU [1af4:1100]
 	Physical Slot: 3
 	Flags: bus master, fast devsel, latency 0, IRQ 10, NUMA node 1, IOMMU group 10
 	Memory at 81c00000 (32-bit, non-prefetchable) [size=4K]
@@ -324,15 +338,15 @@ node     0    1
 	Capabilities: [40] Express Endpoint, IntMsgNum 0
 	Kernel driver in use: virtio-pci
 
-83:00.0 Non-Volatile memory controller: Red Hat, Inc. QEMU NVM Express Controller (rev 02) (prog-if 02 [NVM Express])
-	Subsystem: Red Hat, Inc. Device 1100
+83:00.0 Non-Volatile memory controller [0108]: Red Hat, Inc. QEMU NVM Express Controller [1b36:0010] (rev 02) (prog-if 02 [NVM Express])
+	Subsystem: Red Hat, Inc. Device [1af4:1100]
 	Physical Slot: 5
-	Flags: bus master, fast devsel, latency 0, IRQ 10, NUMA node 1, IOMMU group 11
+	Flags: bus master, fast devsel, latency 0, IRQ 11, NUMA node 1, IOMMU group 11
 	Memory at 81a00000 (64-bit, non-prefetchable) [size=16K]
-	Capabilities: [40] MSI-X: Enable+ Count=65 Masked-
+	Capabilities: [40] MSI-X: Enable- Count=65 Masked-
 	Capabilities: [80] Express Endpoint, IntMsgNum 0
 	Capabilities: [60] Power Management version 3
-	Kernel driver in use: nvme
+	Kernel driver in use: vfio-pci
 	Kernel modules: nvme
 ```
 
