@@ -43,7 +43,7 @@ qemu-system-x86_64 \
   -device pcie-root-port,id=pcierootport.nvme.1,bus=pxbpcie.1,slot=4 \
   -device pcie-root-port,id=pcierootport.nvme.2,bus=pxbpcie.2,slot=5 \
   -drive file=nvme1.qcow2,if=none,id=nvme1,format=qcow2 \
-  -device nvme,drive=nvme1,serial=nvme2,bus=pcierootport.nvme.1 \
+  -device nvme,drive=nvme1,serial=nvme1,bus=pcierootport.nvme.1 \
   -drive file=nvme2.qcow2,if=none,id=nvme2,format=qcow2 \
   -device nvme,drive=nvme2,serial=nvme2,bus=pcierootport.nvme.2 \
   -device intel-iommu,caching-mode=on
@@ -56,10 +56,10 @@ qemu-system-x86_64 \
 available: 2 nodes (0-1)
 node 0 cpus: 0 1 2 3
 node 0 size: 1605 MB
-node 0 free: 1268 MB
+node 0 free: 1249 MB
 node 1 cpus: 4 5 6 7
 node 1 size: 2011 MB
-node 1 free: 1679 MB
+node 1 free: 1707 MB
 node distances:
 node     0    1 
    0:   10   20 
@@ -327,11 +327,12 @@ node     0    1
 83:00.0 Non-Volatile memory controller: Red Hat, Inc. QEMU NVM Express Controller (rev 02) (prog-if 02 [NVM Express])
 	Subsystem: Red Hat, Inc. Device 1100
 	Physical Slot: 5
-	Flags: fast devsel, IRQ 10, NUMA node 1, IOMMU group 11
+	Flags: bus master, fast devsel, latency 0, IRQ 10, NUMA node 1, IOMMU group 11
 	Memory at 81a00000 (64-bit, non-prefetchable) [size=16K]
-	Capabilities: [40] MSI-X: Enable- Count=65 Masked-
+	Capabilities: [40] MSI-X: Enable+ Count=65 Masked-
 	Capabilities: [80] Express Endpoint, IntMsgNum 0
 	Capabilities: [60] Power Management version 3
+	Kernel driver in use: nvme
 	Kernel modules: nvme
 ```
 
