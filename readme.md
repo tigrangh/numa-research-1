@@ -1,9 +1,9 @@
 # Index
 
-## [Host emulation](#host-emulation)
-### [Qemu](#qemu)
-### [Verify the architecture](#verify-the-architecture)
-### [Verify the IOMMU groups](#verify-the-iommu-groups)
+## [Host emulation](#host-emulation-1)
+### [Qemu](#qemu-1)
+### [Verify the architecture](#verify-the-architecture-1)
+### [Verify the IOMMU groups](#verify-the-iommu-groups-1)
 
 ## Host emulation
 
