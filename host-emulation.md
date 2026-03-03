@@ -1,4 +1,4 @@
-# Host Emulation
+# Host emulation
 
 ## Qemu
 
